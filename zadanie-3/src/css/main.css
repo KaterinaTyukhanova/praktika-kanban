@@ -89,3 +89,10 @@ body {
     color: white;
     border: #691644 solid 3px;
 }
+
+.card-btn {
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+    align-items: center;
+}

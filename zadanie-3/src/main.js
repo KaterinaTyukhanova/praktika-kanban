@@ -43,6 +43,11 @@ Vue.component('board', {
               <p>Описание: {{ task.description }}</p>
               <p>Дата создания: {{ task.date_of_create }}</p>
               <p>Дэдлайн: {{ task.data_line }}</p>
+
+              <div class="card-btn">
+                <button @click="from_plan_to_work(task)" class="btn">Переместить в "Задачи в работе"</button>
+                <button @click="delete_from_plan(index)" class="btn">Удалить</button>
+              </div>
             </div>
           </div>
 
@@ -54,6 +59,10 @@ Vue.component('board', {
               <p>Описание: {{ task.description }}</p>
               <p>Дата создания: {{ task.date_of_create }}</p>
               <p>Дэдлайн: {{ task.data_line }}</p>
+
+              <div class="card-btn">
+                <button class="btn" @click="from_work_to_test(task)">Переместить в "Тестирование"</button>
+              </div>
             </div>
           </div>
 
@@ -121,9 +130,24 @@ Vue.component('board', {
                 if(!this.name) this.errors.push("Заголовок не может быть пустым!");
                 if(!this.desc) this.errors.push("Описание не может быть пустым!");
             }
+
+            this.form_show = false;
         },
         showForm() {
             this.form_show = true
+        },
+        from_plan_to_work(task) {
+            const index_column1 = this.plan_tasks.indexOf(task)
+            this.plan_tasks.splice(index_column1, 1);
+            this.tasks_in_work.push(task);
+        },
+        delete_from_plan(taskIndex) {
+            this.plan_tasks.splice(taskIndex, 1);
+        },
+        from_work_to_test(task) {
+            const index_column2 = this.tasks_in_work.indexOf(task)
+            this.tasks_in_work.splice(index_column2, 1);
+            this.testing.push(task);
         }
     }
 })
