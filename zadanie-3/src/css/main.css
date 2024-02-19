@@ -30,3 +30,29 @@ body {
     text-align: center;
     color: white;
 }
+
+.addForm {
+    background-color: #B17BD1;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.column:hover, .addForm:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.7);
+}
+
+.btn-create-card {
+    width: 120px;
+    height: 50px;
+    background-color: #E7CEF4;
+    color: #65218A;
+    border: #65218A solid 2px;
+    border-radius: 3px;
+}
+
+.btn-create-card:hover {
+    background-color: #F0DCFA;
+}
