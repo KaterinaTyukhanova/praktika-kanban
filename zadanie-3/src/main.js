@@ -2,7 +2,7 @@ Vue.component('board', {
     template:`
       <div class="product">
         <div>
-          <div>
+          <div v-if="form_show">
             <form class="addForm" @submit.prevent="onSubmit">
               <p v-if="errors.length">
                 <b>Возникли следующие ошибки, пожалуйста, исправьте их!</b>
@@ -36,18 +36,49 @@ Vue.component('board', {
         <div class="columns-on-page">
           <div class="column">
             <h2 class="title-column">Запланированные задачи</h2>
+            <div class="add_btn"><button class="btn" @click="showForm()">Создать</button></div>
+            <div class="card" v-for="(task, index) in plan_tasks" :key="index">
+              <h3>Заголовок: {{ task.name_card }}</h3>
+              <div class="line"></div>
+              <p>Описание: {{ task.description }}</p>
+              <p>Дата создания: {{ task.date_of_create }}</p>
+              <p>Дэдлайн: {{ task.data_line }}</p>
+            </div>
           </div>
 
           <div class="column">
             <h2 class="title-column">Задачи в работе</h2>
+            <div class="card" v-for="(task, index) in tasks_in_work" :key="index">
+              <h3>Заголовок: {{ task.name_card }}</h3>
+              <div class="line"></div>
+              <p>Описание: {{ task.description }}</p>
+              <p>Дата создания: {{ task.date_of_create }}</p>
+              <p>Дэдлайн: {{ task.data_line }}</p>
+            </div>
           </div>
 
           <div class="column">
             <h2 class="title-column">Тестирование</h2>
+            <div class="card" v-for="(task, index) in testing" :key="index">
+              <h3>Заголовок: {{ task.name_card }}</h3>
+              <div class="line"></div>
+              <p>Описание: {{ task.description }}</p>
+              <p>Дата создания: {{ task.date_of_create }}</p>
+              <p>Дэдлайн: {{ task.data_line }}</p>
+            </div>
           </div>
 
           <div class="column">
             <h2 class="title-column">Выполненные задачи</h2>
+            <div class="card" v-for="(task, index) in completed_tasks" :key="index">
+              <div>
+                <h3>Заголовок: {{ task.name_card }}</h3>
+                <div class="line"></div>
+                <p>Описание: {{ task.description }}</p>
+                <p>Дата создания: {{ task.date_of_create }}</p>
+                <p>Дэдлайн: {{ task.data_line }}</p>
+              </div>
+            </div>
           </div>
           
         </div>
@@ -63,7 +94,8 @@ Vue.component('board', {
             plan_tasks: [],
             tasks_in_work: [],
             testing: [],
-            completed_tasks: []
+            completed_tasks: [],
+            form_show: false
         }
     },
     methods: {
@@ -89,6 +121,9 @@ Vue.component('board', {
                 if(!this.name) this.errors.push("Заголовок не может быть пустым!");
                 if(!this.desc) this.errors.push("Описание не может быть пустым!");
             }
+        },
+        showForm() {
+            this.form_show = true
         }
     }
 })

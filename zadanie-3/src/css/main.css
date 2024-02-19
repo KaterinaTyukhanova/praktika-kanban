@@ -56,3 +56,36 @@ body {
 .btn-create-card:hover {
     background-color: #F0DCFA;
 }
+
+.add_btn {
+    margin: 20px 75px;
+}
+
+.card {
+    background-color: #E7CEF4;
+    border-radius: 5px;
+    border: #A569CC solid 3px;
+    margin: 10px 15px;
+}
+
+.card h3{
+    text-align: center;
+}
+
+.line {
+    background-color: #A569CC;
+    height: 3px;
+    width: 100%;
+}
+
+.btn {
+    width: 130px;
+    background-color: #F9D0E6;
+    border: #A24477 solid 3px;
+}
+
+.btn:hover {
+    background-color: #A24477;
+    color: white;
+    border: #691644 solid 3px;
+}
