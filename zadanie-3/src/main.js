@@ -38,15 +38,33 @@ Vue.component('board', {
             <h2 class="title-column">Запланированные задачи</h2>
             <div class="add_btn"><button class="btn" @click="showForm()">Создать</button></div>
             <div class="card" v-for="(task, index) in plan_tasks" :key="index">
-              <h3>Заголовок: {{ task.name_card }}</h3>
-              <div class="line"></div>
-              <p>Описание: {{ task.description }}</p>
-              <p>Дата создания: {{ task.date_of_create }}</p>
-              <p>Дэдлайн: {{ task.data_line }}</p>
+              <div v-if="edit_index !== index || edit_column !== 'plan_tasks'">
+                <h3>Заголовок: {{ task.name_card }}</h3>
+                <div class="line"></div>
+                <p>Описание: {{ task.description }}</p>
+                <p>Дата создания: {{ task.date_of_create }}</p>
+                <p>Дэдлайн: {{ task.data_line }}</p>
+                <p v-if="task.lastEdit !== null">Последнее редактирование: {{ task.lastEdit }}</p>
 
-              <div class="card-btn">
-                <button @click="from_plan_to_work(task)" class="btn">Переместить в "Задачи в работе"</button>
-                <button @click="delete_from_plan(index)" class="btn">Удалить</button>
+                <div class="card-btn">
+                  <button @click="from_plan_to_work(task)" class="btn">Переместить в "Задачи в работе"</button>
+                  <button @click="edit_start(index, 'plan_tasks')" class="btn">Редактировать</button>
+                  <button @click="delete_from_plan(index)" class="btn">Удалить</button>
+                </div>
+              </div>
+              <div v-if="edit_column === 'plan_tasks' && edit_index === index">
+                <h3>Редактировать карточку</h3>
+                <form @submit.prevent="edit_end(edit_index)">
+                  <p><label for="editTitle">Заголовок</label>
+                    <input id="editTitle" type="text" v-model="edit_task.name"></p>
+                  
+                  <p><label for="editDesc">Описание задачи</label>
+                    <textarea id="editDesc" v-model="edit_task.desc"></textarea></p>
+                  
+                  <p><label for="editDeadline">Дэдлайн</label>
+                    <input id="editDeadline" type="date" v-model="edit_task.deadline"></p>
+                  <button type="submit" >Сохранить</button>
+                </form>
               </div>
             </div>
           </div>
@@ -54,15 +72,33 @@ Vue.component('board', {
           <div class="column">
             <h2 class="title-column">Задачи в работе</h2>
             <div class="card" v-for="(task, index) in tasks_in_work" :key="index">
-              <h3>Заголовок: {{ task.name_card }}</h3>
-              <div class="line"></div>
-              <p>Описание: {{ task.description }}</p>
-              <p>Дата создания: {{ task.date_of_create }}</p>
-              <p>Дэдлайн: {{ task.data_line }}</p>
-              <p class="completed" v-if="task.reason_of_return !== null">Причина возврата: {{ task.reason_of_return }}</p>
+              <div v-if="edit_index !== index || edit_column !== 'tasks_in_work'">
+                <h3>Заголовок: {{ task.name_card }}</h3>
+                <div class="line"></div>
+                <p>Описание: {{ task.description }}</p>
+                <p>Дата создания: {{ task.date_of_create }}</p>
+                <p>Дэдлайн: {{ task.data_line }}</p>
+                <p v-if="task.lastEdit !== null">Последнее редактирование: {{ task.lastEdit }}</p>
+                <p class="completed" v-if="task.reason_of_return !== null">Причина возврата: {{ task.reason_of_return }}</p>
 
-              <div class="card-btn">
-                <button class="btn" @click="from_work_to_test(task)">Переместить в "Тестирование"</button>
+                <div class="card-btn">
+                  <button class="btn" @click="from_work_to_test(task)">Переместить в "Тестирование"</button>
+                  <button @click="edit_start(index, 'tasks_in_work')" class="btn">Редактировать</button>
+                </div>
+              </div>
+              <div v-if="edit_column === 'tasks_in_work' && edit_index === index">
+                <h3>Редактировать карточку</h3>
+                <form @submit.prevent="edit_end(edit_index)">
+                  <p><label for="editTitle">Заголовок</label>
+                    <input id="editTitle" type="text" v-model="edit_task.name"></p>
+
+                  <p><label for="editDesc">Описание задачи</label>
+                    <textarea id="editDesc" v-model="edit_task.desc"></textarea></p>
+
+                  <p><label for="editDeadline">Дэдлайн</label>
+                    <input id="editDeadline" type="date" v-model="edit_task.deadline"></p>
+                  <button type="submit" >Сохранить</button>
+                </form>
               </div>
             </div>
           </div>
@@ -70,19 +106,37 @@ Vue.component('board', {
           <div class="column">
             <h2 class="title-column">Тестирование</h2>
             <div class="card" v-for="(task, index) in testing" :key="index">
-              <h3>Заголовок: {{ task.name_card }}</h3>
-              <div class="line"></div>
-              <p>Описание: {{ task.description }}</p>
-              <p>Дата создания: {{ task.date_of_create }}</p>
-              <p>Дэдлайн: {{ task.data_line }}</p>
-              
-              <div class="card-btn">
-                <button class="btn" @click="from_test_to_completed(task)">Переместить в "Выполненные задачи"</button>
-                <button class="btn" @click="return_to_work(task, index)">Вернуть в "Задачи в работе"</button>
-              </div>
+              <div v-if="edit_index !== index || edit_column !== 'testing'">
+                <h3>Заголовок: {{ task.name_card }}</h3>
+                <div class="line"></div>
+                <p>Описание: {{ task.description }}</p>
+                <p>Дата создания: {{ task.date_of_create }}</p>
+                <p>Дэдлайн: {{ task.data_line }}</p>
+                <p v-if="task.lastEdit !== null">Последнее редактирование: {{ task.lastEdit }}</p>
 
-              <label for="return"><br>Причина возврата:</label>
-              <input id="return" type="text" v-model="task.reason_of_return">
+                <div class="card-btn">
+                  <button class="btn" @click="from_test_to_completed(task)">Переместить в "Выполненные задачи"</button>
+                  <button class="btn" @click="return_to_work(task, index)">Вернуть в "Задачи в работе"</button>
+                  <button @click="edit_start(index, 'testing')" class="btn">Редактировать</button>
+                </div>
+
+                <label for="return"><br>Причина возврата:</label>
+                <input id="return" type="text" v-model="task.reason_of_return">
+              </div>
+              <div v-if="edit_column === 'testing' && edit_index === index">
+                <h3>Редактировать карточку</h3>
+                <form @submit.prevent="edit_end(edit_index)">
+                  <p><label for="editTitle">Заголовок</label>
+                    <input id="editTitle" type="text" v-model="edit_task.name"></p>
+
+                  <p><label for="editDesc">Описание задачи</label>
+                    <textarea id="editDesc" v-model="edit_task.desc"></textarea></p>
+
+                  <p><label for="editDeadline">Дэдлайн</label>
+                    <input id="editDeadline" type="date" v-model="edit_task.deadline"></p>
+                  <button type="submit" >Сохранить</button>
+                </form>
+              </div>
             </div>
           </div>
 
@@ -116,7 +170,10 @@ Vue.component('board', {
             tasks_in_work: [],
             testing: [],
             completed_tasks: [],
-            form_show: false
+            form_show: false,
+            edit_task: null,
+            edit_index: null,
+            edit_column: null
         }
     },
     methods: {
@@ -135,7 +192,8 @@ Vue.component('board', {
                     data_line: this.deadline,
                     date_of_create: new Date().toLocaleString(),
                     Overdue: false,
-                    reason_of_return: null
+                    reason_of_return: null,
+                    lastEdit: null
                 });
                 this.name = null;
                 this.desc = null;
@@ -179,6 +237,72 @@ Vue.component('board', {
                 task.Overdue = true;
             }
             this.completed_tasks.push(task);
+        },
+        edit_start(index, column) {
+            this.edit_index = index;
+            this.edit_column = column;
+
+            if(this.edit_column === 'plan_tasks'){
+                this.edit_task = {
+                    name: this.plan_tasks[index].name_card,
+                    desc: this.plan_tasks[index].description,
+                    deadline: this.plan_tasks[index].data_line,
+                    date_of_create: this.plan_tasks[index].date_of_create
+                };
+            }
+            else if(this.edit_column === 'tasks_in_work'){
+                this.edit_task = {
+                    name: this.tasks_in_work[index].name_card,
+                    desc: this.tasks_in_work[index].description,
+                    deadline: this.tasks_in_work[index].data_line,
+                    date_of_create: this.tasks_in_work[index].date_of_create,
+                    reason_of_return: this.tasks_in_work[index].reason_of_return
+                };
+            }
+            else if(this.edit_column === 'testing'){
+                this.edit_task = {
+                    name: this.testing[index].name_card,
+                    desc: this.testing[index].description,
+                    deadline: this.testing[index].data_line,
+                    date_of_create: this.testing[index].date_of_create,
+                    reason_of_return: this.testing[index].reason_of_return
+                };
+            }
+        },
+        edit_end(index) {
+            if (this.edit_column === 'plan_tasks') {
+                this.plan_tasks[this.edit_index] = {
+                    name_card: this.edit_task.name,
+                    description: this.edit_task.desc,
+                    data_line: this.edit_task.deadline,
+                    date_of_create: this.edit_task.date_of_create,
+                    lastEdit: new Date().toLocaleString()
+                };
+            }
+            else if (this.edit_column === 'tasks_in_work') {
+                this.tasks_in_work[this.edit_index] = {
+                    name_card: this.edit_task.name,
+                    description: this.edit_task.desc,
+                    data_line: this.edit_task.deadline,
+                    date_of_create: this.edit_task.date_of_create,
+                    reason_of_return: this.edit_task.reason_of_return,
+                    lastEdit: new Date().toLocaleString()
+                };
+            }
+            else if (this.edit_column === 'testing') {
+                this.testing[this.edit_index] = {
+                    name_card: this.edit_task.name,
+                    description: this.edit_task.desc,
+                    data_line: this.edit_task.deadline,
+                    date_of_create: this.edit_task.date_of_create,
+                    reason_of_return: this.edit_task.reason_of_return,
+                    lastEdit: new Date().toLocaleString()
+                };
+            }
+
+            this.edit_task = null;
+            this.edit_index = null;
+            this.edit_column = null;
         }
     }
 })
