@@ -102,3 +102,7 @@ body {
     font-weight: bold;
     text-align: center;
 }
+
+.edit_btn {
+    margin: 20px 60px;
+}

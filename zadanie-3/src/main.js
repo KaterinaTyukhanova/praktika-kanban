@@ -63,7 +63,7 @@ Vue.component('board', {
                   
                   <p><label for="editDeadline">Дэдлайн</label>
                     <input id="editDeadline" type="date" v-model="edit_task.deadline"></p>
-                  <button type="submit" >Сохранить</button>
+                  <button type="submit" class="btn edit_btn">Сохранить</button>
                 </form>
               </div>
             </div>
@@ -97,7 +97,7 @@ Vue.component('board', {
 
                   <p><label for="editDeadline">Дэдлайн</label>
                     <input id="editDeadline" type="date" v-model="edit_task.deadline"></p>
-                  <button type="submit" >Сохранить</button>
+                  <button type="submit" class="btn edit_btn">Сохранить</button>
                 </form>
               </div>
             </div>
@@ -134,7 +134,7 @@ Vue.component('board', {
 
                   <p><label for="editDeadline">Дэдлайн</label>
                     <input id="editDeadline" type="date" v-model="edit_task.deadline"></p>
-                  <button type="submit" >Сохранить</button>
+                  <button type="submit" class="btn edit_btn">Сохранить</button>
                 </form>
               </div>
             </div>
@@ -176,6 +176,15 @@ Vue.component('board', {
             edit_column: null
         }
     },
+    mounted() {
+        if (localStorage.getItem('cards')) {
+            const savedData = JSON.parse(localStorage.getItem('cards'));
+            this.plan_tasks = savedData.plan_tasks;
+            this.tasks_in_work = savedData.tasks_in_work;
+            this.testing = savedData.testing;
+            this.completed_tasks = savedData.completed_tasks;
+        }
+    },
     methods: {
         onSubmit() {
             this.errors = [];
@@ -204,6 +213,13 @@ Vue.component('board', {
             }
 
             this.form_show = false;
+
+            localStorage.setItem('cards', JSON.stringify({
+                plan_tasks: this.plan_tasks,
+                tasks_in_work: this.tasks_in_work,
+                testing: this.testing,
+                completed_tasks: this.completed_tasks
+            }));
         },
         showForm() {
             this.form_show = true
@@ -212,14 +228,35 @@ Vue.component('board', {
             const index_column1 = this.plan_tasks.indexOf(task)
             this.plan_tasks.splice(index_column1, 1);
             this.tasks_in_work.push(task);
+
+            localStorage.setItem('cards', JSON.stringify({
+                plan_tasks: this.plan_tasks,
+                tasks_in_work: this.tasks_in_work,
+                testing: this.testing,
+                completed_tasks: this.completed_tasks
+            }));
         },
         delete_from_plan(taskIndex) {
             this.plan_tasks.splice(taskIndex, 1);
+
+            localStorage.setItem('cards', JSON.stringify({
+                plan_tasks: this.plan_tasks,
+                tasks_in_work: this.tasks_in_work,
+                testing: this.testing,
+                completed_tasks: this.completed_tasks
+            }));
         },
         from_work_to_test(task) {
             const index_column2 = this.tasks_in_work.indexOf(task)
             this.tasks_in_work.splice(index_column2, 1);
             this.testing.push(task);
+
+            localStorage.setItem('cards', JSON.stringify({
+                plan_tasks: this.plan_tasks,
+                tasks_in_work: this.tasks_in_work,
+                testing: this.testing,
+                completed_tasks: this.completed_tasks
+            }));
         },
         return_to_work(task, taskIndex) {
             if (!this.testing[taskIndex].reason_of_return) {
@@ -229,6 +266,13 @@ Vue.component('board', {
             const index_return = this.testing.indexOf(task)
             this.testing.splice(index_return, 1);
             this.tasks_in_work.push(task);
+
+            localStorage.setItem('cards', JSON.stringify({
+                plan_tasks: this.plan_tasks,
+                tasks_in_work: this.tasks_in_work,
+                testing: this.testing,
+                completed_tasks: this.completed_tasks
+            }));
         },
         from_test_to_completed(task) {
             const index_column3 = this.testing.indexOf(task)
@@ -237,6 +281,13 @@ Vue.component('board', {
                 task.Overdue = true;
             }
             this.completed_tasks.push(task);
+
+            localStorage.setItem('cards', JSON.stringify({
+                plan_tasks: this.plan_tasks,
+                tasks_in_work: this.tasks_in_work,
+                testing: this.testing,
+                completed_tasks: this.completed_tasks
+            }));
         },
         edit_start(index, column) {
             this.edit_index = index;
@@ -303,6 +354,13 @@ Vue.component('board', {
             this.edit_task = null;
             this.edit_index = null;
             this.edit_column = null;
+
+            localStorage.setItem('cards', JSON.stringify({
+                plan_tasks: this.plan_tasks,
+                tasks_in_work: this.tasks_in_work,
+                testing: this.testing,
+                completed_tasks: this.completed_tasks
+            }));
         }
     }
 })
