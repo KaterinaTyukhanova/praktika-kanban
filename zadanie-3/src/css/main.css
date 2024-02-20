@@ -106,3 +106,7 @@ body {
 .edit_btn {
     margin: 20px 60px;
 }
+
+.disabled {
+    opacity: 0.5;
+}

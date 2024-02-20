@@ -71,7 +71,7 @@ Vue.component('board', {
 
           <div class="column">
             <h2 class="title-column">Задачи в работе</h2>
-            <div class="card" v-for="(task, index) in tasks_in_work" :key="index">
+            <div class="card" v-for="(task, index) in tasks_in_work" :key="index" :class="{'disabled': task.isBlock}">
               <div v-if="edit_index !== index || edit_column !== 'tasks_in_work'">
                 <h3>Заголовок: {{ task.name_card }}</h3>
                 <div class="line"></div>
@@ -82,8 +82,9 @@ Vue.component('board', {
                 <p class="completed" v-if="task.reason_of_return !== null">Причина возврата: {{ task.reason_of_return }}</p>
 
                 <div class="card-btn">
-                  <button class="btn" @click="from_work_to_test(task)">Переместить в "Тестирование"</button>
-                  <button @click="edit_start(index, 'tasks_in_work')" class="btn">Редактировать</button>
+                  <button class="btn" @click="from_work_to_test(task)" :disabled="task.isBlock">Переместить в "Тестирование"</button>
+                  <button @click="edit_start(index, 'tasks_in_work')" class="btn" :disabled="task.isBlock">Редактировать</button>
+                  <button class="btn" @click="priority_task(task)" :disabled="task.isBlock">Сделать приоритетной</button>
                 </div>
               </div>
               <div v-if="edit_column === 'tasks_in_work' && edit_index === index">
@@ -202,7 +203,8 @@ Vue.component('board', {
                     date_of_create: new Date().toLocaleString(),
                     Overdue: false,
                     reason_of_return: null,
-                    lastEdit: null
+                    lastEdit: null,
+                    isBlock: false
                 });
                 this.name = null;
                 this.desc = null;
@@ -281,6 +283,7 @@ Vue.component('board', {
                 task.Overdue = true;
             }
             this.completed_tasks.push(task);
+            this.unlock();
 
             localStorage.setItem('cards', JSON.stringify({
                 plan_tasks: this.plan_tasks,
@@ -361,7 +364,21 @@ Vue.component('board', {
                 testing: this.testing,
                 completed_tasks: this.completed_tasks
             }));
-        }
+        },
+        unlock() {
+            this.tasks_in_work.forEach(t => t.isBlock = false);
+        },
+        priority_task(task) {
+            this.tasks_in_work.forEach(t => t.isBlock = true);
+            task.isBlock = false;
+
+            localStorage.setItem('cards', JSON.stringify({
+                plan_tasks: this.plan_tasks,
+                tasks_in_work: this.tasks_in_work,
+                testing: this.testing,
+                completed_tasks: this.completed_tasks
+            }));
+        },
     }
 })
 
