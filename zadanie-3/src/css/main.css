@@ -96,3 +96,9 @@ body {
     flex-direction: column;
     align-items: center;
 }
+
+.completed {
+    color: #4B186A;
+    font-weight: bold;
+    text-align: center;
+}
